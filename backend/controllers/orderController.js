@@ -11,6 +11,7 @@ import {
   findOrderItemsByOrderId,
   findOrdersByCustomerId,
 } from "../repositories/orderRepository.js";
+import { publishOrderPlaced } from "../services/orderEventPublisher.js";
 import { placeOrder } from "../services/orderService.js";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -121,6 +122,8 @@ export const createOrder = async (req, res) => {
     customerId: req.auth.customerId,
     items,
   });
+
+  await publishOrderPlaced({ order, items });
 
   setBehaviorEvent(req, {
     eventType: EVENT_TYPES.PURCHASE,

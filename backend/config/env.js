@@ -176,6 +176,18 @@ if (!/^\d+(b|kb|mb)$/.test(jsonBodyLimit)) {
   throw new Error("HTTP_JSON_BODY_LIMIT must use a size such as 32768b, 32kb, or 1mb");
 }
 
+// Optional: publishing order events to Amazon SQS is disabled when the URL is empty
+const orderEventsQueueUrl = process.env.ORDER_EVENTS_QUEUE_URL?.trim() ?? "";
+const awsRegion = process.env.AWS_REGION?.trim() ?? "";
+
+if (orderEventsQueueUrl && !orderEventsQueueUrl.startsWith("https://")) {
+  throw new Error("ORDER_EVENTS_QUEUE_URL must be an https:// SQS queue URL");
+}
+
+if (orderEventsQueueUrl && !awsRegion) {
+  throw new Error("AWS_REGION is required when ORDER_EVENTS_QUEUE_URL is set");
+}
+
 export const config = Object.freeze({
   app: Object.freeze({
     environment,
@@ -235,5 +247,10 @@ export const config = Object.freeze({
       sameSite: cookieSameSite,
       path: cookiePath,
     }),
+  }),
+  orderEvents: Object.freeze({
+    enabled: orderEventsQueueUrl !== "",
+    queueUrl: orderEventsQueueUrl,
+    region: awsRegion,
   }),
 });

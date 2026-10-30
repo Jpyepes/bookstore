@@ -129,6 +129,10 @@ services:
       AUTH_COOKIE_SAME_SITE: ${AUTH_COOKIE_SAME_SITE:?AUTH_COOKIE_SAME_SITE is required}
       AUTH_COOKIE_PATH: ${AUTH_COOKIE_PATH:?AUTH_COOKIE_PATH is required}
 
+      # Optional: order events to Amazon SQS (disabled when empty)
+      ORDER_EVENTS_QUEUE_URL: ${ORDER_EVENTS_QUEUE_URL:-}
+      AWS_REGION: ${AWS_REGION:-}
+
     ports:
       - "${BACKEND_HOST_PORT:?BACKEND_HOST_PORT is required}:${PORT:?PORT is required}"
 
